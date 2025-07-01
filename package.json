@@ -11,7 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@bitte-ai/agent-sdk": "^0.2.3",
+    "@bitte-ai/agent-sdk": "^0.2.1",
     "@lifi/sdk": "^3.7.9",
     "ajv": "^8.17.1",
     "next": "^15.3.4",
@@ -23,6 +23,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.7",
+    "@types/react": "18.3.23",
     "concurrently": "^9.2.0",
     "eslint": "^9.30.0",
     "eslint-config-next": "^15.3.4",
