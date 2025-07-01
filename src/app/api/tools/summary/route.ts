@@ -1,0 +1,52 @@
+import { NextResponse } from 'next/server';
+import {
+  validateInput,
+  addressField,
+  numberField,
+  FieldParser,
+} from '@bitte-ai/agent-sdk';
+import { getAddress } from 'viem';
+import { getProcessedSummary } from './utils';
+
+export interface SummaryInput {
+  claimant: string;
+  chainId: number;
+}
+
+export const summaryParsers: FieldParser<SummaryInput> = {
+  claimant: addressField,
+  chainId: numberField,
+};
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const input = validateInput<SummaryInput>(searchParams, summaryParsers);
+
+    const { claims, totalAmount, trancheIds } = await getProcessedSummary(
+      getAddress(input.claimant),
+      input.chainId
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        claims,
+        meta: {
+          totalAmount,
+          trancheIds,
+          chainId: input.chainId,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('[Summary Error]', error);
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : 'Validation failed',
+      },
+      { status: 400 }
+    );
+  }
+}
