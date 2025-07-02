@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
 import { ACCOUNT_ID, PLUGIN_URL } from '@/app/config';
-import { addressParam, AddressSchema, chainIdParam } from '@bitte-ai/agent-sdk';
+import {
+  addressParam,
+  AddressSchema,
+  chainIdParam,
+  MetaTransactionSchema,
+  SignRequestResponse200,
+  SignRequestSchema,
+} from '@bitte-ai/agent-sdk';
 import { SummaryResponse200 } from './components/responses';
 import { instructions } from './instructions';
+import { numberParam } from './params';
 
 export async function GET() {
   const pluginData = {
@@ -42,14 +50,47 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/claim': {
+        get: {
+          summary: 'get claim transaction payloads',
+          description:
+            'Responds with a Bitte Virtual Token claim transaction payload',
+          operationId: 'claim',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+            { $ref: '#/components/parameters/trancheId' },
+            { $ref: '#/components/parameters/index' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/SignRequestResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
         claimant: { ...addressParam, name: 'claimant' },
         chainId: chainIdParam,
+        trancheId: {
+          ...numberParam,
+          name: 'trancheId',
+          description: 'Tranche identifier',
+          example: 0,
+        },
+        index: {
+          ...numberParam,
+          name: 'index',
+          description: 'Position within the tranche',
+          example: 7,
+        },
       },
-      schemas: { Address: AddressSchema },
-      responses: { SummaryResponse200 },
+      schemas: {
+        Address: AddressSchema,
+        SignRequest: SignRequestSchema,
+        MetaTransaction: MetaTransactionSchema,
+      },
+      responses: { SummaryResponse200, SignRequestResponse200 },
     },
   };
 

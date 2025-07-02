@@ -28,7 +28,6 @@ export async function GET(request: Request) {
       input.chainId
     );
 
-    // inject chainId into your meta
     return NextResponse.json(
       {
         success: true,
