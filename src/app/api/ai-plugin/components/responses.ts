@@ -21,6 +21,7 @@ export const SummaryResponse200 = {
                 'claimTypeName',
                 'cliff',
                 'vesting',
+                'claimed',
               ],
               properties: {
                 trancheId: { type: 'string' },
@@ -48,12 +49,23 @@ export const SummaryResponse200 = {
                   description:
                     'Vesting duration (e.g. “24 months” or “24 days”)',
                 },
+                claimed: {
+                  type: 'boolean',
+                  description:
+                    'Whether this tranche/index has already been claimed on-chain',
+                },
               },
             },
           },
           meta: {
             type: 'object',
-            required: ['totalAmount', 'trancheIds', 'chainId'],
+            required: [
+              'totalAmount',
+              'trancheIds',
+              'chainId',
+              'claimedCount',
+              'unclaimedCount',
+            ],
             properties: {
               totalAmount: { type: 'string' },
               trancheIds: {
@@ -63,6 +75,14 @@ export const SummaryResponse200 = {
               chainId: {
                 type: 'integer',
                 description: 'The chain ID used for this summary check',
+              },
+              claimedCount: {
+                type: 'integer',
+                description: 'Number of claims already claimed',
+              },
+              unclaimedCount: {
+                type: 'integer',
+                description: 'Number of claims not yet claimed',
               },
             },
           },
