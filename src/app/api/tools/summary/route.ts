@@ -6,7 +6,7 @@ import {
   FieldParser,
 } from '@bitte-ai/agent-sdk';
 import { getAddress } from 'viem';
-import { getProcessedSummary } from './utils';
+import { getProcessedSummary } from '../utils';
 
 export interface SummaryInput {
   claimant: string;
@@ -23,18 +23,18 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const input = validateInput<SummaryInput>(searchParams, summaryParsers);
 
-    const { claims, totalAmount, trancheIds } = await getProcessedSummary(
+    const { claims, meta } = await getProcessedSummary(
       getAddress(input.claimant),
       input.chainId
     );
 
+    // inject chainId into your meta
     return NextResponse.json(
       {
         success: true,
         claims,
         meta: {
-          totalAmount,
-          trancheIds,
+          ...meta,
           chainId: input.chainId,
         },
       },

@@ -1,0 +1,134 @@
+import { unstable_cache } from 'next/cache';
+import { type Address, createPublicClient, PublicClient, http } from 'viem';
+import { getChainById } from '@bitte-ai/agent-sdk';
+import { BITTE_VIRTUAL_TOKEN_ABI } from './abi';
+import { BITTE_VIRTUAL_TOKEN } from './addresses';
+import {
+  ClaimTypeNames,
+  ClaimDurations,
+  MerkleClaim,
+  ProcessedClaim,
+  SummaryMeta,
+  SummaryResult,
+} from './types';
+
+export function getBitteVirtualToken(chainId: number): Address {
+  const addr = BITTE_VIRTUAL_TOKEN[chainId];
+  if (!addr) {
+    throw new Error(
+      `No BITTE virtual token address configured for chain ${chainId}`
+    );
+  }
+  return addr;
+}
+
+export function getClient(chainId: number): PublicClient {
+  const chain = getChainById(chainId);
+  const client = createPublicClient({
+    chain,
+    transport: http(chain.rpcUrls.default.http[0]),
+  });
+  return client;
+}
+
+async function _fetchMerkleClaims(): Promise<MerkleClaim[]> {
+  const res = await fetch(
+    'https://raw.githubusercontent.com/lumoswiz/raven-merkle-proofs/main/merkle.json',
+    { cache: 'no-store' }
+  );
+  if (!res.ok) throw new Error('Failed to fetch merkle.json');
+
+  const raw: Record<
+    string,
+    { root: string; data: Omit<MerkleClaim, 'trancheId'>[] }
+  > = await res.json();
+
+  return Object.entries(raw).flatMap(([trancheId, { data }]) =>
+    data.map((row) => ({ ...row, trancheId }))
+  );
+}
+
+export const fetchMerkleClaims = unstable_cache(_fetchMerkleClaims);
+
+const pluralize = (n: number, unit: 'day' | 'month') =>
+  `${n} ${unit}${n === 1 ? '' : 's'}`;
+
+export function enrichClaim(
+  c: MerkleClaim,
+  chainId: number,
+  claimed = false
+): ProcessedClaim {
+  const { cliff: C, vest: V } = ClaimDurations[c.claimType];
+  const unit = chainId === 84532 ? 'day' : 'month';
+
+  return {
+    ...c,
+    claimTypeName: ClaimTypeNames[c.claimType] ?? 'Unknown',
+    cliff: pluralize(C, unit),
+    vesting: pluralize(V, unit),
+    claimed,
+  };
+}
+
+export async function getClaimStatuses(
+  chainId: number,
+  claims: MerkleClaim[]
+): Promise<boolean[]> {
+  const client = getClient(chainId);
+  const tokenAddress = getBitteVirtualToken(chainId);
+
+  const calls = claims.map((c) => ({
+    address: tokenAddress,
+    abi: BITTE_VIRTUAL_TOKEN_ABI,
+    functionName: 'isClaimed' as const,
+    args: [c.trancheId, BigInt(c.index)],
+  }));
+
+  const raw = await client.multicall({ contracts: calls });
+
+  return raw.map((r, i) => {
+    if (r.status === 'success') {
+      return r.result as boolean;
+    } else {
+      return false;
+    }
+  });
+}
+
+export async function getProcessedSummary(
+  claimant: Address,
+  chainId: number,
+  includeStatus = true
+): Promise<SummaryResult> {
+  const raw = await fetchMerkleClaims();
+  const filtered = raw.filter(
+    (c) => c.claimant.toLowerCase() === claimant.toLowerCase()
+  );
+
+  let claims: ProcessedClaim[];
+  if (includeStatus && filtered.length > 0) {
+    const statuses = await getClaimStatuses(chainId, filtered);
+    claims = filtered.map((c, i) => enrichClaim(c, chainId, statuses[i]));
+  } else {
+    claims = filtered.map((c) => enrichClaim(c, chainId));
+  }
+
+  const totalAmount = claims
+    .reduce((sum, c) => sum + BigInt(c.claimableAmount), 0n)
+    .toString();
+
+  const trancheIds = Array.from(new Set(claims.map((c) => c.trancheId)));
+
+  const claimedCount = claims.filter((c) => c.claimed).length;
+  const unclaimedCount = claims.length - claimedCount;
+
+  return {
+    claims,
+    meta: {
+      totalAmount,
+      trancheIds,
+      claimedCount,
+      unclaimedCount,
+    },
+  };
+}
