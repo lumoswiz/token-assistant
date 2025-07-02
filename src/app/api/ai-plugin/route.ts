@@ -8,7 +8,7 @@ import {
   SignRequestResponse200,
   SignRequestSchema,
 } from '@bitte-ai/agent-sdk';
-import { SummaryResponse200 } from './components/responses';
+import { SummaryResponse200, BalanceResponse200 } from './components/responses';
 import { instructions } from './instructions';
 import { numberArrayStringParam, numberParam } from './params';
 
@@ -84,6 +84,21 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/balance': {
+        get: {
+          summary: 'summarise user virtual token balances',
+          description:
+            'Responds with a summary of the virtual token balances of the user',
+          operationId: 'balance',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/BalanceResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
@@ -117,7 +132,11 @@ export async function GET() {
         SignRequest: SignRequestSchema,
         MetaTransaction: MetaTransactionSchema,
       },
-      responses: { SummaryResponse200, SignRequestResponse200 },
+      responses: {
+        SummaryResponse200,
+        SignRequestResponse200,
+        BalanceResponse200,
+      },
     },
   };
 

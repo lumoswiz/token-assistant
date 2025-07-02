@@ -91,3 +91,36 @@ export const SummaryResponse200 = {
     },
   },
 };
+
+export const BalanceResponse200 = {
+  description: 'Balance summary response',
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          data: {
+            type: 'object',
+            properties: {
+              balanceOf: { type: 'string', example: '1000000000000000000' },
+              swappableBalanceOf: {
+                type: 'string',
+                example: '500000000000000000',
+              },
+              chainId: { type: 'number', example: 8453 },
+              claimant: { type: 'string', example: '0x1234567890abcdef...' },
+            },
+            required: [
+              'balanceOf',
+              'swappableBalanceOf',
+              'chainId',
+              'claimant',
+            ],
+          },
+        },
+        required: ['success', 'data'],
+      },
+    },
+  },
+};

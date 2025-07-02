@@ -9,7 +9,7 @@ export const numberArrayStringParam = {
   required: true,
   schema: {
     type: 'string' as const,
-    description: 'Comma-separated list of numbers (e.g., "1,2,3")',
+    description: 'Comma-separated list of numbers.',
   },
   example: '1,2,3',
 };
