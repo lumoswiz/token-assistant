@@ -117,6 +117,21 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/swap-all': {
+        get: {
+          summary: 'get swapAll transaction payloads',
+          description:
+            'Responds with a Bitte Virtual Token swapAll transaction payload',
+          operationId: 'swap-all',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/SignRequestResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
