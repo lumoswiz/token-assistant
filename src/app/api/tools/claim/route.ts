@@ -91,7 +91,7 @@ export async function GET(request: Request) {
       {
         error: err instanceof Error ? err.message : 'Error generating claim tx',
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

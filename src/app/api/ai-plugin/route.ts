@@ -10,7 +10,7 @@ import {
 } from '@bitte-ai/agent-sdk';
 import { SummaryResponse200 } from './components/responses';
 import { instructions } from './instructions';
-import { numberParam } from './params';
+import { numberArrayStringParam, numberParam } from './params';
 
 export async function GET() {
   const pluginData = {
@@ -67,6 +67,23 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/claim-many': {
+        get: {
+          summary: 'get claimMany transaction payloads',
+          description:
+            'Responds with a Bitte Virtual Token claimMany transaction payload',
+          operationId: 'claimMany',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+            { $ref: '#/components/parameters/trancheIds' },
+            { $ref: '#/components/parameters/indices' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/SignRequestResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
@@ -83,6 +100,16 @@ export async function GET() {
           name: 'index',
           description: 'Position within the tranche',
           example: 7,
+        },
+        trancheIds: {
+          ...numberArrayStringParam,
+          name: 'trancheIds',
+          description: 'Comma-separated list of tranche identifiers',
+        },
+        indices: {
+          ...numberArrayStringParam,
+          name: 'indices',
+          description: 'Comma-separated list of indices within each tranche',
         },
       },
       schemas: {

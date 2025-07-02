@@ -3,3 +3,13 @@ export const numberParam = {
   required: true,
   schema: { type: 'number' as const },
 };
+
+export const numberArrayStringParam = {
+  in: 'query' as const,
+  required: true,
+  schema: {
+    type: 'string' as const,
+    description: 'Comma-separated list of numbers (e.g., "1,2,3")',
+  },
+  example: '1,2,3',
+};
