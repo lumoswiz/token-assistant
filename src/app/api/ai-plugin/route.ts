@@ -3,6 +3,7 @@ import { ACCOUNT_ID, PLUGIN_URL } from '@/app/config';
 import {
   addressParam,
   AddressSchema,
+  amountParam,
   chainIdParam,
   MetaTransactionSchema,
   SignRequestResponse200,
@@ -99,6 +100,23 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/delegate': {
+        get: {
+          summary: 'get delegate stake transaction payloads',
+          description:
+            'Responds with a Bitte Virtual Token delegate stake transaction payload',
+          operationId: 'delegate',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+            { $ref: '#/components/parameters/agent' },
+            { $ref: '#/components/parameters/amount' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/SignRequestResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
@@ -126,6 +144,8 @@ export async function GET() {
           name: 'indices',
           description: 'Comma-separated list of indices within each tranche',
         },
+        amount: amountParam,
+        agent: { ...addressParam, name: 'agent' },
       },
       schemas: {
         Address: AddressSchema,
