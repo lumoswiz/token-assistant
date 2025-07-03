@@ -121,6 +121,23 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/stake': {
+        get: {
+          summary: 'get agent stake transaction payloads',
+          description:
+            'Responds with a Bitte Virtual Token stake (agent) transaction payload',
+          operationId: 'stake',
+          parameters: [
+            { $ref: '#/components/parameters/claimant' },
+            { $ref: '#/components/parameters/chainId' },
+            { $ref: '#/components/parameters/agent' },
+            { $ref: '#/components/parameters/amount' },
+          ],
+          responses: {
+            '200': { $ref: '#/components/responses/SignRequestResponse200' },
+          },
+        },
+      },
       '/api/tools/swap-all': {
         get: {
           summary: 'get swapAll transaction payloads',
