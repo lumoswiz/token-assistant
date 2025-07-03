@@ -74,7 +74,7 @@ export async function getClaimStatuses(
 
   const raw = await client.multicall({ contracts: calls });
 
-  return raw.map((r, i) => {
+  return raw.map((r) => {
     if (r.status === 'success') {
       return r.result as boolean;
     } else {
