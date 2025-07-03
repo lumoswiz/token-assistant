@@ -1233,7 +1233,10 @@ export const BITTE_VIRTUAL_TOKEN_ABI = [
   {
     type: 'function',
     name: 'stake',
-    inputs: [{ name: 'amount', type: 'uint256', internalType: 'uint256' }],
+    inputs: [
+      { name: 'agent', type: 'address', internalType: 'address' },
+      { name: 'amount', type: 'uint256', internalType: 'uint256' },
+    ],
     outputs: [{ name: 'stakeId', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'nonpayable',
   },
