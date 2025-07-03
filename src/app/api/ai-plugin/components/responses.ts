@@ -124,3 +124,24 @@ export const BalanceResponse200 = {
     },
   },
 };
+
+export const VirtualStakingStatusResponse200 = {
+  description: 'Virtual staking status response',
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        required: ['success', 'canVirtualStake', 'chainId'],
+        properties: {
+          success: { type: 'boolean', example: true },
+          canVirtualStake: {
+            type: 'boolean',
+            description:
+              'True if virtual staking contract is funded and virtual staking is enabled',
+          },
+          chainId: { type: 'integer', example: 8453 },
+        },
+      },
+    },
+  },
+};

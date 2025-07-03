@@ -9,7 +9,11 @@ import {
   SignRequestResponse200,
   SignRequestSchema,
 } from '@bitte-ai/agent-sdk';
-import { SummaryResponse200, BalanceResponse200 } from './components/responses';
+import {
+  SummaryResponse200,
+  BalanceResponse200,
+  VirtualStakingStatusResponse200,
+} from './components/responses';
 import { instructions } from './instructions';
 import { numberArrayStringParam, numberParam } from './params';
 
@@ -132,6 +136,19 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/virtual-staking-status': {
+        get: {
+          summary: 'get virtual staking status ',
+          description: 'Responds with if virtual staking is enabled',
+          operationId: 'virtual-staking-status',
+          parameters: [{ $ref: '#/components/parameters/chainId' }],
+          responses: {
+            '200': {
+              $ref: '#/components/responses/VirtualStakingStatusResponse200',
+            },
+          },
+        },
+      },
     },
     components: {
       parameters: {
@@ -171,6 +188,7 @@ export async function GET() {
         SummaryResponse200,
         SignRequestResponse200,
         BalanceResponse200,
+        VirtualStakingStatusResponse200,
       },
     },
   };
