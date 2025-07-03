@@ -8,7 +8,6 @@ import {
   ClaimDurations,
   MerkleClaim,
   ProcessedClaim,
-  SummaryMeta,
   SummaryResult,
 } from './types';
 
