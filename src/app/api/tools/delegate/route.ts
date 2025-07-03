@@ -8,9 +8,14 @@ import {
   type FieldParser,
 } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress, parseEther } from 'viem';
-import { getBitteVirtualToken, getClient } from '../utils';
+import { getClient } from '../utils';
 import { AGENT_STAKING_ABI, BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
-import { AGENT_STAKING } from '../addresses';
+import {
+  getAgentStaking,
+  getBitteToken,
+  getBitteVirtualToken,
+  getVirtualStaking,
+} from '../addresses';
 
 export interface StakeInput {
   claimant: string;
@@ -36,27 +41,45 @@ export async function GET(request: Request) {
     const chainId = input.chainId;
     const amountInWei = parseEther(input.amount.toString());
 
-    const tokenAddress = getBitteVirtualToken(chainId);
-    const stakingAddress = AGENT_STAKING[chainId];
+    const virtualTokenAddress = getBitteVirtualToken(chainId);
+    const stakingAddress = getAgentStaking(chainId);
+    const bitteTokenAddress = getBitteToken(chainId);
+    const virtualStakingAddress = getVirtualStaking(chainId);
     const client = getClient(chainId);
 
-    const [balance, isListedAgent] = await client.multicall({
-      contracts: [
+    const [balance, isListedAgent, virtualStakingFunded] =
+      await client.multicall({
+        contracts: [
+          {
+            address: virtualTokenAddress,
+            abi: BITTE_VIRTUAL_TOKEN_ABI,
+            functionName: 'balanceOf',
+            args: [claimant],
+          },
+          {
+            address: stakingAddress,
+            abi: AGENT_STAKING_ABI,
+            functionName: 'agents',
+            args: [agent],
+          },
+          {
+            address: bitteTokenAddress,
+            abi: BITTE_VIRTUAL_TOKEN_ABI,
+            functionName: 'balanceOf',
+            args: [virtualStakingAddress],
+          },
+        ],
+        allowFailure: false,
+      });
+
+    if (virtualStakingFunded === 0n) {
+      return NextResponse.json(
         {
-          address: tokenAddress,
-          abi: BITTE_VIRTUAL_TOKEN_ABI,
-          functionName: 'balanceOf',
-          args: [claimant],
+          error: `Staking is not live. The virtual staking contract has not been funded.`,
         },
-        {
-          address: stakingAddress,
-          abi: AGENT_STAKING_ABI,
-          functionName: 'agents',
-          args: [agent],
-        },
-      ],
-      allowFailure: false,
-    });
+        { status: 400 }
+      );
+    }
 
     if (amountInWei > balance) {
       return NextResponse.json(
@@ -87,7 +110,7 @@ export async function GET(request: Request) {
       from: claimant,
       metaTransactions: [
         {
-          to: tokenAddress,
+          to: virtualTokenAddress,
           value: '0x0',
           data,
         },
