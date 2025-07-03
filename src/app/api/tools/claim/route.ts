@@ -1,5 +1,3 @@
-// tools/claim/route.ts
-
 import { NextResponse } from 'next/server';
 import { validateInput, signRequestFor } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress } from 'viem';
