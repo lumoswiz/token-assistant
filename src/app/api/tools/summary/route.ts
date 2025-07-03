@@ -1,22 +1,7 @@
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput } from '@bitte-ai/agent-sdk';
 import { getAddress } from 'viem';
-import { getProcessedSummary } from '../utils';
-
-export interface SummaryInput {
-  claimant: string;
-  chainId: number;
-}
-
-export const summaryParsers: FieldParser<SummaryInput> = {
-  claimant: addressField,
-  chainId: numberField,
-};
+import { getProcessedSummary, SummaryInput, summaryParsers } from '../utils';
 
 export async function GET(request: Request) {
   try {

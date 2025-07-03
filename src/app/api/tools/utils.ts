@@ -1,6 +1,13 @@
 import { unstable_cache } from 'next/cache';
 import { type Address, createPublicClient, PublicClient, http } from 'viem';
-import { getChainById } from '@bitte-ai/agent-sdk';
+import {
+  getChainById,
+  addressField,
+  numberField,
+  floatField,
+  type FieldParser,
+} from '@bitte-ai/agent-sdk';
+
 import { BITTE_VIRTUAL_TOKEN_ABI } from './abi';
 import { getBitteVirtualToken } from './addresses';
 import {
@@ -120,3 +127,96 @@ export async function getProcessedSummary(
     },
   };
 }
+
+export interface BalanceInput {
+  claimant: string;
+  chainId: number;
+}
+
+export const balanceParsers: FieldParser<BalanceInput> = {
+  claimant: addressField,
+  chainId: numberField,
+};
+
+export interface ClaimInput {
+  claimant: string;
+  chainId: number;
+  trancheId: number;
+  index: number;
+}
+
+export const claimParsers: FieldParser<ClaimInput> = {
+  claimant: addressField,
+  chainId: numberField,
+  trancheId: numberField,
+  index: numberField,
+};
+
+export interface ClaimManyInput {
+  claimant: string;
+  chainId: number;
+  trancheIds: number[];
+  indices: number[];
+}
+
+const numericArrayField = (param: string | null, name: string): number[] => {
+  if (!param) {
+    throw new Error(`Missing required parameter: ${name}`);
+  }
+  return param.split(',').map((x) => {
+    const num = Number(x.trim());
+    if (isNaN(num)) {
+      throw new Error(`Invalid number '${x}' in parameter '${name}'`);
+    }
+    return num;
+  });
+};
+
+export const claimManyParsers: FieldParser<ClaimManyInput> = {
+  claimant: addressField,
+  chainId: numberField,
+  trancheIds: numericArrayField,
+  indices: numericArrayField,
+};
+
+export interface StakeInput {
+  claimant: string;
+  chainId: number;
+  agent: string;
+  amount: number;
+}
+
+export const stakeParsers: FieldParser<StakeInput> = {
+  claimant: addressField,
+  chainId: numberField,
+  agent: addressField,
+  amount: floatField,
+};
+
+export interface SummaryInput {
+  claimant: string;
+  chainId: number;
+}
+
+export const summaryParsers: FieldParser<SummaryInput> = {
+  claimant: addressField,
+  chainId: numberField,
+};
+
+export interface SwapAllInput {
+  claimant: string;
+  chainId: number;
+}
+
+export const swapAllParsers: FieldParser<SwapAllInput> = {
+  claimant: addressField,
+  chainId: numberField,
+};
+
+export interface VirtualStakeStatusInput {
+  chainId: number;
+}
+
+export const virtualStakeStatusParsers: FieldParser<VirtualStakeStatusInput> = {
+  chainId: numberField,
+};

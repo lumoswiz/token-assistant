@@ -1,24 +1,9 @@
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  signRequestFor,
-  type FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput, signRequestFor } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress } from 'viem';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
 import { getBitteVirtualToken } from '../addresses';
-
-export interface SwapAllInput {
-  claimant: string;
-  chainId: number;
-}
-
-export const swapAllParsers: FieldParser<SwapAllInput> = {
-  claimant: addressField,
-  chainId: numberField,
-};
+import { SwapAllInput, swapAllParsers } from '../utils';
 
 export async function GET(request: Request) {
   try {

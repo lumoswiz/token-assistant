@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  floatField,
-  signRequestFor,
-  type FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput, signRequestFor } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress, parseEther } from 'viem';
-import { getClient } from '../utils';
+import { getClient, StakeInput, stakeParsers } from '../utils';
 import { AGENT_STAKING_ABI, BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
 import {
   getAgentStaking,
@@ -16,20 +9,6 @@ import {
   getBitteVirtualToken,
   getVirtualStaking,
 } from '../addresses';
-
-export interface StakeInput {
-  claimant: string;
-  chainId: number;
-  agent: string;
-  amount: number;
-}
-
-export const stakeParsers: FieldParser<StakeInput> = {
-  claimant: addressField,
-  chainId: numberField,
-  agent: addressField,
-  amount: floatField,
-};
 
 export async function GET(request: Request) {
   try {

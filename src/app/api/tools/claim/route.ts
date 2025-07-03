@@ -1,31 +1,11 @@
 // tools/claim/route.ts
 
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  signRequestFor,
-  type FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput, signRequestFor } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress } from 'viem';
-import { fetchMerkleClaims } from '../utils';
+import { ClaimInput, claimParsers, fetchMerkleClaims } from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
 import { getBitteVirtualToken } from '../addresses';
-
-export interface ClaimInput {
-  claimant: string;
-  chainId: number;
-  trancheId: number;
-  index: number;
-}
-
-export const claimParsers: FieldParser<ClaimInput> = {
-  claimant: addressField,
-  chainId: numberField,
-  trancheId: numberField,
-  index: numberField,
-};
 
 export async function GET(request: Request) {
   try {

@@ -1,42 +1,9 @@
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  signRequestFor,
-  type FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput, signRequestFor } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress } from 'viem';
-import { fetchMerkleClaims } from '../utils';
+import { ClaimManyInput, claimManyParsers, fetchMerkleClaims } from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
 import { getBitteVirtualToken } from '../addresses';
-
-export interface ClaimManyInput {
-  claimant: string;
-  chainId: number;
-  trancheIds: number[];
-  indices: number[];
-}
-
-const numericArrayField = (param: string | null, name: string): number[] => {
-  if (!param) {
-    throw new Error(`Missing required parameter: ${name}`);
-  }
-  return param.split(',').map((x) => {
-    const num = Number(x.trim());
-    if (isNaN(num)) {
-      throw new Error(`Invalid number '${x}' in parameter '${name}'`);
-    }
-    return num;
-  });
-};
-
-export const claimManyParsers: FieldParser<ClaimManyInput> = {
-  claimant: addressField,
-  chainId: numberField,
-  trancheIds: numericArrayField,
-  indices: numericArrayField,
-};
 
 export async function GET(request: Request) {
   try {

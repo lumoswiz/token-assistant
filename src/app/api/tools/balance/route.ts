@@ -1,24 +1,9 @@
 import { NextResponse } from 'next/server';
-import {
-  validateInput,
-  addressField,
-  numberField,
-  type FieldParser,
-} from '@bitte-ai/agent-sdk';
+import { validateInput } from '@bitte-ai/agent-sdk';
 import { getAddress } from 'viem';
-import { getClient } from '../utils';
+import { BalanceInput, balanceParsers, getClient } from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
 import { getBitteVirtualToken } from '../addresses';
-
-export interface BalanceInput {
-  claimant: string;
-  chainId: number;
-}
-
-export const balanceParsers: FieldParser<BalanceInput> = {
-  claimant: addressField,
-  chainId: numberField,
-};
 
 export async function GET(request: Request) {
   try {

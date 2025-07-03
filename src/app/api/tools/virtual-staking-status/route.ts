@@ -1,20 +1,12 @@
 import { NextResponse } from 'next/server';
-import {
-  numberField,
-  type FieldParser,
-  validateInput,
-} from '@bitte-ai/agent-sdk';
+import { validateInput } from '@bitte-ai/agent-sdk';
 import { getBitteToken, getVirtualStaking } from '../addresses';
-import { getClient } from '../utils';
+import {
+  getClient,
+  VirtualStakeStatusInput,
+  virtualStakeStatusParsers,
+} from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
-
-export interface VirtualStakeStatusInput {
-  chainId: number;
-}
-
-export const virtualStakeStatusParsers: FieldParser<VirtualStakeStatusInput> = {
-  chainId: numberField,
-};
 
 export async function GET(request: Request) {
   try {
