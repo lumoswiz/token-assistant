@@ -9,8 +9,9 @@ import {
   type FieldParser,
 } from '@bitte-ai/agent-sdk';
 import { encodeFunctionData, getAddress } from 'viem';
-import { fetchMerkleClaims, getBitteVirtualToken } from '../utils';
+import { fetchMerkleClaims } from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
+import { getBitteVirtualToken } from '../addresses';
 
 export interface ClaimInput {
   claimant: string;

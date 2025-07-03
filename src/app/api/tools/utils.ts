@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { type Address, createPublicClient, PublicClient, http } from 'viem';
 import { getChainById } from '@bitte-ai/agent-sdk';
 import { BITTE_VIRTUAL_TOKEN_ABI } from './abi';
-import { BITTE_VIRTUAL_TOKEN } from './addresses';
+import { getBitteVirtualToken } from './addresses';
 import {
   ClaimTypeNames,
   ClaimDurations,
@@ -11,16 +11,6 @@ import {
   SummaryMeta,
   SummaryResult,
 } from './types';
-
-export function getBitteVirtualToken(chainId: number): Address {
-  const addr = BITTE_VIRTUAL_TOKEN[chainId];
-  if (!addr) {
-    throw new Error(
-      `No BITTE virtual token address configured for chain ${chainId}`
-    );
-  }
-  return addr;
-}
 
 export function getClient(chainId: number): PublicClient {
   const chain = getChainById(chainId);
@@ -75,10 +65,9 @@ export async function getClaimStatuses(
   claims: MerkleClaim[]
 ): Promise<boolean[]> {
   const client = getClient(chainId);
-  const tokenAddress = getBitteVirtualToken(chainId);
 
   const calls = claims.map((c) => ({
-    address: tokenAddress,
+    address: getBitteVirtualToken(chainId),
     abi: BITTE_VIRTUAL_TOKEN_ABI,
     functionName: 'isClaimed' as const,
     args: [c.trancheId, BigInt(c.index)],

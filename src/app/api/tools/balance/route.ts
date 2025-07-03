@@ -6,8 +6,9 @@ import {
   type FieldParser,
 } from '@bitte-ai/agent-sdk';
 import { getAddress } from 'viem';
-import { getClient, getBitteVirtualToken } from '../utils';
+import { getClient } from '../utils';
 import { BITTE_VIRTUAL_TOKEN_ABI } from '../abi';
+import { getBitteVirtualToken } from '../addresses';
 
 export interface BalanceInput {
   claimant: string;
