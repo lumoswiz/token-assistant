@@ -13,6 +13,7 @@ import {
   SummaryResponse200,
   BalanceResponse200,
   VirtualStakingStatusResponse200,
+  GetAgentsResponse200,
 } from './components/responses';
 import { instructions } from './instructions';
 import { numberArrayStringParam, numberParam } from './params';
@@ -166,6 +167,17 @@ export async function GET() {
           },
         },
       },
+      '/api/tools/get-agents': {
+        get: {
+          summary: 'get agents ',
+          description: 'Responds with agent contract addresses to stake to',
+          operationId: 'get-agents',
+          parameters: [{ $ref: '#/components/parameters/chainId' }],
+          responses: {
+            '200': { $ref: '#/components/responses/GetAgentsResponse200' },
+          },
+        },
+      },
     },
     components: {
       parameters: {
@@ -206,6 +218,7 @@ export async function GET() {
         SignRequestResponse200,
         BalanceResponse200,
         VirtualStakingStatusResponse200,
+        GetAgentsResponse200,
       },
     },
   };

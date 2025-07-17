@@ -220,3 +220,11 @@ export interface VirtualStakeStatusInput {
 export const virtualStakeStatusParsers: FieldParser<VirtualStakeStatusInput> = {
   chainId: numberField,
 };
+
+export interface GetAgentsStatusInput {
+  chainId: number;
+}
+
+export const getAgentsStatusParsers: FieldParser<GetAgentsStatusInput> = {
+  chainId: numberField,
+};

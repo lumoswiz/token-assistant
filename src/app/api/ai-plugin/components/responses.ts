@@ -145,3 +145,35 @@ export const VirtualStakingStatusResponse200 = {
     },
   },
 };
+
+export const GetAgentsResponse200 = {
+  description: 'List of agent contract addresses',
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        required: ['success', 'chainId', 'agents'],
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          chainId: {
+            type: 'integer',
+            example: 8453,
+            description: 'Chain ID from the request',
+          },
+          agents: {
+            type: 'array',
+            description: 'List of agent contract addresses',
+            items: {
+              type: 'string',
+              format: 'address',
+              example: '0x4AAC49716981a089b28d59eDF32579ca96243727',
+            },
+          },
+        },
+      },
+    },
+  },
+};
